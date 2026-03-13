@@ -7,7 +7,7 @@ name = "aretex_wa"
 version = "0.0.1"
 description = "Aretex WhatsApp Integration"
 authors = [
-    { name="Aretex", email="dev@aretex.com" }
+    { name="Aretex", email="algo@aretex.com" }
 ]
 dependencies = []
 

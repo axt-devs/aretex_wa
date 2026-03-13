@@ -6,7 +6,7 @@ app_publisher = "Aretex"
 app_description = "WhatsApp Automation Platform for Aretex HVAC"
 app_email = "dev@aretex.com"
 app_license = "MIT"
-app_version = app_version
+app_version = __version__
 
 after_install = "aretex_wa.install.after_install"
 before_uninstall = "aretex_wa.install.before_uninstall"
