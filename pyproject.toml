@@ -10,3 +10,6 @@ authors = [
     { name="Aretex", email="dev@aretex.com" }
 ]
 dependencies = []
+
+[tool.bench.frappe-dependencies]
+frappe = ">=15.0.0 <16.0.0"
