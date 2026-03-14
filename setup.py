@@ -5,7 +5,7 @@ with open("requirements.txt") as f:
 
 setup(
     name="aretex_wa",
-    version="2.0.0",
+    version="0.1.0",
     description="WhatsApp Automation Platform for Aretex HVAC",
     author="Aretex",
     author_email="dev@aretex.com",
