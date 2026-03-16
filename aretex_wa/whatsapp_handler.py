@@ -425,10 +425,13 @@ def receive_whatsapp_message(**kwargs):
 
         if mode == "subscribe" and token == stored_token:
     frappe.response["type"] = "txt"
-    frappe.response["txt"] = challenge   
+    frappe.response["txt"] = challenge
     return
-        frappe.response.update({"http_status_code": 403})
-        return "Forbidden"
+frappe.local.response["http_status_code"] = 403
+frappe.response["type"] = "txt"
+frappe.response["txt"] = "Forbidden"
+return
+
 
     # ── INBOUND MESSAGE PROCESSING (POST) ──
     try:
