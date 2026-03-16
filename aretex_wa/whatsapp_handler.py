@@ -40,15 +40,16 @@ def _is_rate_limited(phone_number):
 # ─────────────────────────────────────────────────────────────────────────────
 def _verify_signature(request_body_bytes, signature_header):
     """Verify X-Hub-Signature-256 from Meta."""
-    verify_token = frappe.conf.get("whatsapp_verify_token", "")
-    if not verify_token:
+    app_secret = frappe.conf.get("whatsapp_app_secret", "")
+    if not app_secret:
         return True  # skip if not configured yet (dev mode)
     expected = "sha256=" + hmac.new(
-        verify_token.encode("utf-8"),
+        app_secret.encode("utf-8"),
         request_body_bytes,
         hashlib.sha256
     ).hexdigest()
     return hmac.compare_digest(expected, signature_header or "")
+
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -423,8 +424,9 @@ def receive_whatsapp_message(**kwargs):
         stored_token = frappe.conf.get("whatsapp_verify_token", "")
 
         if mode == "subscribe" and token == stored_token:
-            frappe.response.update({"http_status_code": 200})
-            return int(challenge)
+    frappe.response["type"] = "txt"
+    frappe.response["txt"] = challenge   
+    return
         frappe.response.update({"http_status_code": 403})
         return "Forbidden"
 
