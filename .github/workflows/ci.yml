@@ -78,7 +78,12 @@ jobs:
       - name: Setup Frappe Bench
         run: |
           pip install frappe-bench
-          bench init --skip-redis-config-generation --skip-assets --python "$(which python)" ~/frappe-bench
+          # Explicitly capture the python3.12 path set by actions/setup-python
+          # Do NOT use $(which python) — it resolves to system Python 3.10
+          PYTHON_BIN=$(python -c "import sys; print(sys.executable)")
+          echo "Using Python binary: $PYTHON_BIN"
+          python --version
+          bench init --skip-redis-config-generation --skip-assets --python "$PYTHON_BIN" ~/frappe-bench
           mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'"
           mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
 
