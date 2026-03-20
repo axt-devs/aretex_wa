@@ -92,14 +92,13 @@ jobs:
       - name: Install aretex_wa
         working-directory: /home/runner/frappe-bench
         run: |
-          bench get-app aretex_wa $GITHUB_WORKSPACE --skip-assets
+          bench get-app aretex_wa $GITHUB_WORKSPACE
           bench setup requirements --dev
           bench new-site \
             --db-root-password root \
             --admin-password admin \
             test_site
           bench --site test_site install-app aretex_wa
-          bench build --skip-frappe
         env:
           CI: 'Yes'
 
