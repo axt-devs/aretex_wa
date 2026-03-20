@@ -36,15 +36,15 @@ jobs:
 
     steps:
       - name: Clone
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.14.2'
+          python-version: '3.12'
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18
           check-latest: true
@@ -60,7 +60,7 @@ jobs:
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
-        run: 'echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT'
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
 
       - uses: actions/cache@v4
         id: yarn-cache
@@ -73,26 +73,31 @@ jobs:
       - name: Install MariaDB Client
         run: |
           sudo apt update
-          sudo apt-get install mariadb-client
+          sudo apt-get install -y mariadb-client
 
       - name: Setup Frappe Bench
         run: |
           pip install frappe-bench
-          # Explicitly capture the python3.12 path set by actions/setup-python
-          # Do NOT use $(which python) — it resolves to system Python 3.10
-          PYTHON_BIN=$(python -c "import sys; print(sys.executable)")
-          echo "Using Python binary: $PYTHON_BIN"
-          python --version
-          bench init --skip-redis-config-generation --skip-assets --python "$PYTHON_BIN" ~/frappe-bench
-          mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'"
-          mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
+          bench init \
+            --skip-redis-config-generation \
+            --skip-assets \
+            --python "$(which python)" \
+            --frappe-branch version-16 \
+            ~/frappe-bench
+          mariadb --host 127.0.0.1 --port 3306 -u root -proot \
+            -e "SET GLOBAL character_set_server = 'utf8mb4'"
+          mariadb --host 127.0.0.1 --port 3306 -u root -proot \
+            -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
 
       - name: Install aretex_wa
         working-directory: /home/runner/frappe-bench
         run: |
           bench get-app aretex_wa $GITHUB_WORKSPACE
           bench setup requirements --dev
-          bench new-site --db-root-password root --admin-password admin test_site
+          bench new-site \
+            --db-root-password root \
+            --admin-password admin \
+            test_site
           bench --site test_site install-app aretex_wa
           bench build
         env:

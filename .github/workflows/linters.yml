@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
   linter:
-    name: 'Frappe Linter'
+    name: Frappe Linter
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
 
@@ -22,10 +22,10 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.14.2'
+          python-version: '3.12'
           cache: pip
 
-      - uses: pre-commit/action@v3.0.0
+      - uses: pre-commit/action@v3.0.1
 
       - name: Download Semgrep rules
         run: git clone --depth 1 https://github.com/frappe/semgrep-rules.git frappe-semgrep-rules
@@ -36,18 +36,18 @@ jobs:
           semgrep ci --config ./frappe-semgrep-rules/rules --config r/python.lang.correctness
 
   deps-vulnerable-check:
-    name: 'Vulnerable Dependency Check'
+    name: Vulnerable Dependency Check
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.14.2'
+          python-version: '3.12'
 
       - uses: actions/checkout@v4
 
       - name: Cache pip
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/*requirements.txt', '**/pyproject.toml', '**/setup.py') }}
@@ -58,5 +58,4 @@ jobs:
       - name: Install and run pip-audit
         run: |
           pip install pip-audit
-          cd ${GITHUB_WORKSPACE}
           pip-audit --desc on .
