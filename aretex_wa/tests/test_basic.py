@@ -1,50 +1,60 @@
 """
 aretex_wa/tests/test_basic.py
-Basic tests to satisfy CI requirements.
+Unit tests for core business logic — no DB or API calls needed.
 """
 
-import frappe
 import unittest
 
 
-class TestWhatsappHandler(unittest.TestCase):
+class TestComputePriority(unittest.TestCase):
 
-	def test_compute_priority_high_full_system(self):
+	def test_full_system_is_high(self):
 		from aretex_wa.whatsapp_handler import compute_priority
-		result = compute_priority("full_system", "hvac", "issue")
-		self.assertEqual(result, "HIGH")
+		self.assertEqual(compute_priority("full_system", "hvac", "issue"), "HIGH")
 
-	def test_compute_priority_high_specific_area_hvac(self):
+	def test_specific_area_hvac_is_high(self):
 		from aretex_wa.whatsapp_handler import compute_priority
-		result = compute_priority("specific_area", "hvac", "issue")
-		self.assertEqual(result, "HIGH")
+		self.assertEqual(compute_priority("specific_area", "hvac", "issue"), "HIGH")
 
-	def test_compute_priority_medium_specific_area_lighting(self):
+	def test_specific_area_security_is_high(self):
 		from aretex_wa.whatsapp_handler import compute_priority
-		result = compute_priority("specific_area", "lighting", "issue")
-		self.assertEqual(result, "MEDIUM")
+		self.assertEqual(compute_priority("specific_area", "security", "issue"), "HIGH")
 
-	def test_compute_priority_low_query(self):
+	def test_specific_area_lighting_is_medium(self):
 		from aretex_wa.whatsapp_handler import compute_priority
-		result = compute_priority("full_system", "hvac", "query")
-		self.assertEqual(result, "LOW")
+		self.assertEqual(compute_priority("specific_area", "lighting", "issue"), "MEDIUM")
 
-	def test_decide_resource_engineer_full_system(self):
-		from aretex_wa.whatsapp_handler import decide_resource_type
-		result = decide_resource_type("full_system", "lighting")
-		self.assertEqual(result, "Engineer")
+	def test_specific_device_is_medium(self):
+		from aretex_wa.whatsapp_handler import compute_priority
+		self.assertEqual(compute_priority("specific_device", "hvac", "issue"), "MEDIUM")
 
-	def test_decide_resource_engineer_hvac(self):
-		from aretex_wa.whatsapp_handler import decide_resource_type
-		result = decide_resource_type("specific_area", "hvac")
-		self.assertEqual(result, "Engineer")
+	def test_query_is_low(self):
+		from aretex_wa.whatsapp_handler import compute_priority
+		self.assertEqual(compute_priority("full_system", "hvac", "query"), "LOW")
 
-	def test_decide_resource_technician_lighting(self):
-		from aretex_wa.whatsapp_handler import decide_resource_type
-		result = decide_resource_type("specific_area", "lighting")
-		self.assertEqual(result, "Technician")
+	def test_disclosed_is_low(self):
+		from aretex_wa.whatsapp_handler import compute_priority
+		self.assertEqual(compute_priority("specific_area", "hvac", "disclosed"), "LOW")
 
-	def test_decide_resource_technician_av(self):
+
+class TestDecideResourceType(unittest.TestCase):
+
+	def test_full_system_is_engineer(self):
 		from aretex_wa.whatsapp_handler import decide_resource_type
-		result = decide_resource_type("specific_device", "av")
-		self.assertEqual(result, "Technician")
+		self.assertEqual(decide_resource_type("full_system", "lighting"), "Engineer")
+
+	def test_hvac_is_engineer(self):
+		from aretex_wa.whatsapp_handler import decide_resource_type
+		self.assertEqual(decide_resource_type("specific_area", "hvac"), "Engineer")
+
+	def test_security_is_engineer(self):
+		from aretex_wa.whatsapp_handler import decide_resource_type
+		self.assertEqual(decide_resource_type("specific_area", "security"), "Engineer")
+
+	def test_lighting_is_technician(self):
+		from aretex_wa.whatsapp_handler import decide_resource_type
+		self.assertEqual(decide_resource_type("specific_area", "lighting"), "Technician")
+
+	def test_av_is_technician(self):
+		from aretex_wa.whatsapp_handler import decide_resource_type
+		self.assertEqual(decide_resource_type("specific_device", "av"), "Technician")
