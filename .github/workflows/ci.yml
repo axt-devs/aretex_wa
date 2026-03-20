@@ -95,16 +95,18 @@ jobs:
           # 1. Copy app into bench apps folder
           cp -r $GITHUB_WORKSPACE apps/aretex_wa
 
-          # 2. Ensure modules.txt and patches.txt exist inside the Python package
-          #    Frappe REQUIRES these files — create them if missing
+          # 2. Ensure required Frappe files exist
           touch apps/aretex_wa/aretex_wa/modules.txt
           touch apps/aretex_wa/aretex_wa/patches.txt
 
           # 3. Install Python package into bench virtualenv
           ./env/bin/pip install -q -e apps/aretex_wa
 
-          # 4. Register app with Frappe (add to apps.txt)
-          echo "aretex_wa" >> sites/apps.txt
+          # 4. Register app in apps.txt — printf guarantees newline BEFORE
+          #    so we never get "frappearetex_wa" on one line
+          printf "\naretex_wa\n" >> sites/apps.txt
+          echo "--- apps.txt contents ---"
+          cat sites/apps.txt
 
           # 5. Install dev test dependencies
           bench setup requirements --dev
