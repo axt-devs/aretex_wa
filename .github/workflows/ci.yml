@@ -92,21 +92,30 @@ jobs:
       - name: Install aretex_wa
         working-directory: /home/runner/frappe-bench
         run: |
-          # Step 1: Install Python package into the bench venv
-          git clone $GITHUB_WORKSPACE apps/aretex_wa
-          uv pip install --quiet -e apps/aretex_wa --python env/bin/python
+          # 1. Copy app into bench apps folder
+          cp -r $GITHUB_WORKSPACE apps/aretex_wa
 
-          # Step 2: Register app in apps.txt (bench skips this when --skip-assets is used)
+          # 2. Ensure modules.txt and patches.txt exist inside the Python package
+          #    Frappe REQUIRES these files — create them if missing
+          touch apps/aretex_wa/aretex_wa/modules.txt
+          touch apps/aretex_wa/aretex_wa/patches.txt
+
+          # 3. Install Python package into bench virtualenv
+          ./env/bin/pip install -q -e apps/aretex_wa
+
+          # 4. Register app with Frappe (add to apps.txt)
           echo "aretex_wa" >> sites/apps.txt
 
-          # Step 3: Install remaining dev requirements
+          # 5. Install dev test dependencies
           bench setup requirements --dev
 
-          # Step 4: Create site and install app
+          # 6. Create site
           bench new-site \
             --db-root-password root \
             --admin-password admin \
             test_site
+
+          # 7. Install app on site
           bench --site test_site install-app aretex_wa
         env:
           CI: 'Yes'
