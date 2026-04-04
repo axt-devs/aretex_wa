@@ -1,0 +1,17 @@
+MANIFEST.in
+README.md
+pyproject.toml
+requirements.txt
+setup.py
+aretex_wa/__init__.py
+aretex_wa/api_background_tasks.py
+aretex_wa/hooks.py
+aretex_wa/install.py
+aretex_wa/whatsapp_handler.py
+aretex_wa.egg-info/PKG-INFO
+aretex_wa.egg-info/SOURCES.txt
+aretex_wa.egg-info/dependency_links.txt
+aretex_wa.egg-info/not-zip-safe
+aretex_wa.egg-info/top_level.txt
+aretex_wa/tests/__init__.py
+aretex_wa/tests/test_basic.py
